@@ -160,6 +160,38 @@ function getLocalTime(timezone) {
     }
 }
 
+// Функция для отображения списка городов
+function displayCities(cities) {
+    const citiesContainer = document.getElementById('citiesContainer');
+    
+    const citiesHTML = cities.map(city => `
+        <div class="col-12 col-sm-6">
+            <div class="city-card bg-light rounded-2xl p-3 border">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                        <h6 class="fw-bold mb-1">${city.name}</h6>
+                        <small class="text-muted">${city.country}</small>
+                    </div>
+                    <div class="text-end">
+                        <div class="fw-bold text-primary">${city.temperature}°C</div>
+                        <div class="text-muted small">${city.icon}</div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between text-sm">
+                    <span class="text-muted">
+                        <i class="bi bi-droplet me-1"></i>${city.humidity}%
+                    </span>
+                    <span class="text-muted">
+                        <i class="bi bi-clock me-1"></i>${city.localTime}
+                    </span>
+                </div>
+            </div>
+        </div>
+    `).join('');
+
+    citiesContainer.innerHTML = citiesHTML;
+}
+
 // Функция для определения описания погоды по температуре
 function getWeatherDescription(temp) {
     if (temp < -10) return 'сильный мороз';
@@ -265,5 +297,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('cityInput').focus();
 
 });
+
 
 
