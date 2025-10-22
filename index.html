@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Погодный Информатор</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+</head>
+<body class="bg-gradient-to-br from-blue-400 to-blue-600 min-h-screen">
+    <div class="container py-8">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <!-- Карточка приложения -->
+                <div class="card shadow-lg border-0 rounded-2xl">
+                    <div class="card-body p-6">
+                        <!-- Заголовок -->
+                        <div class="text-center mb-6">
+                            <h1 class="text-3xl font-bold text-gray-800 mb-2">
+                                <i class="bi bi-cloud-sun text-blue-500 me-2"></i>
+                                Погодный Информатор
+                            </h1>
+                            <p class="text-gray-600">Узнайте текущую погоду в любом городе</p>
+                        </div>
+
+                        <!-- Форма поиска -->
+                        <div class="mb-6">
+                            <div class="input-group">
+                                <input 
+                                    type="text" 
+                                    id="cityInput" 
+                                    class="form-control form-control-lg" 
+                                    placeholder="Введите название города..."
+                                    onkeypress="handleKeyPress(event)"
+                                >
+                                <button 
+                                    id="searchBtn" 
+                                    class="btn btn-primary btn-lg px-4"
+                                    onclick="getWeather()"
+                                >
+                                    <i class="bi bi-search me-2"></i>
+                                    Найти
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Результаты погоды -->
+                        <div id="weatherResult" class="text-center" style="display: none;">
+                            <!-- Погодная информация будет здесь -->
+                        </div>
+
+                        <!-- Сообщение об ошибке -->
+                        <div id="errorMessage" class="alert alert-danger text-center" style="display: none;">
+                            <!-- Сообщения об ошибках будут здесь -->
+                        </div>
+
+                        <!-- Спиннер загрузки -->
+                        <div id="loadingSpinner" class="text-center" style="display: none;">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Загрузка...</span>
+                            </div>
+                            <p class="text-gray-600 mt-2">Получаем данные о погоде...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Информация о приложении -->
+                <div class="text-center mt-4">
+                    <p class="text-white text-sm">
+                        Используется Open-Meteo API
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Наш JavaScript -->
+    <script src="app.js"></script>
+</body>
+</html>
