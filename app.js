@@ -165,11 +165,11 @@ function displayCities(cities) {
     const citiesContainer = document.getElementById('citiesContainer');
     
     const citiesHTML = cities.map(city => `
-        <div class="col-6 col-sm-3">
+        <div class="col-10 col-sm-3">
             <div class="city-card bg-white rounded-2xl p-3 border h-100">
                 <div class="d-flex justify-content-between align-items-start mb-2">
                     <div>
-                        <h6 class="fw-bold mb-1 text-truncate">${city.name}</h6>
+                        <h6 class="fw-bold mb-1">${city.name}</h6>
                         <small class="text-muted">${city.country}</small>
                     </div>
                     <div class="text-end ms-2">
@@ -318,6 +318,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }, 60000); // Обновлять каждую минуту
 });
+
 
 
 
