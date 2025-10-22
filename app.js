@@ -292,7 +292,7 @@ function handleKeyPress(event) {
     }
 }
 
-/ Обработчик переключения вкладок
+// Обработчик переключения вкладок
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('cityInput').focus();
 
@@ -318,6 +318,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('cityInput').focus();
 
 });
+
 
 
 
