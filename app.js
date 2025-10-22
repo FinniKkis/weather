@@ -146,6 +146,20 @@ async function loadMajorCitiesWeather() {
     }
 }
 
+// Функция для получения локального времени
+function getLocalTime(timezone) {
+    try {
+        return new Date().toLocaleString('ru-RU', {
+            timeZone: timezone,
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+        });
+    } catch (error) {
+        return '--:--';
+    }
+}
+
 // Функция для определения описания погоды по температуре
 function getWeatherDescription(temp) {
     if (temp < -10) return 'сильный мороз';
@@ -251,4 +265,5 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('cityInput').focus();
 
 });
+
 
