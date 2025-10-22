@@ -292,6 +292,12 @@ function handleKeyPress(event) {
     }
 }
 
+// Проверка активной вкладки
+function isCitiesTabActive() {
+    const citiesTab = document.getElementById('cities-tab');
+    return citiesTab.classList.contains('active');
+}
+
 // Обработчик переключения вкладок
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('cityInput').focus();
@@ -311,12 +317,6 @@ document.addEventListener('DOMContentLoaded', function() {
             loadMajorCitiesWeather();
         }
     }, 60000); // Обновлять каждую минуту
-});
-
-// Фокусировка на поле ввода при загрузке
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('cityInput').focus();
-
 });
 
 
