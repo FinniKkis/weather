@@ -84,8 +84,28 @@
                                     <p class="text-gray-600 mt-2">Получаем данные о погоде...</p>
                                 </div>
                             </div>
+                            <!-- Вкладка городов мира -->
+                            <div class="tab-pane fade" id="cities" role="tabpanel">
+                                <div class="text-center mb-4">
+                                    <p class="text-gray-600">Погода и время в крупнейших городах мира</p>
+                                </div>
+                                
+                                <!-- Спиннер загрузки для городов -->
+                                <div id="citiesLoading" class="text-center">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Загрузка...</span>
+                                    </div>
+                                    <p class="text-gray-600 mt-2">Загружаем данные о городах...</p>
+                                </div>
+
+                                <!-- Контейнер для городов -->
+                                <div id="citiesContainer" class="row g-3" style="display: none;">
+                                    <!-- Города будут загружены здесь -->
+                                </div>
+                            </div>
                         </div>
-                    
+                    </div>
+                </div>
                 <!-- Информация о приложении -->
                 <div class="text-center mt-4">
                     <p class="text-white text-sm">
@@ -103,4 +123,5 @@
 </body>
 
 </html>
+
 
