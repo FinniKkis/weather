@@ -88,6 +88,64 @@ async function getWeather() {
     }
 }
 
+// Функция для загрузки погоды для крупных городов
+async function loadMajorCitiesWeather() {
+    const citiesContainer = document.getElementById('citiesContainer');
+    const citiesLoading = document.getElementById('citiesLoading');
+
+    try {
+        // Создаем массив промисов для параллельной загрузки погоды
+        const weatherPromises = majorCities.map(async (city) => {
+            try {
+                const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${city.coords.lat}&longitude=${city.coords.lon}&current=temperature_2m,relative_humidity_2m&timezone=auto`);
+                
+                if (!response.ok) {
+                    throw new Error('Ошибка получения данных');
+                }
+                
+                const data = await response.json();
+                const current = data.current;
+                
+                return {
+                    ...city,
+                    temperature: Math.round(current.temperature_2m),
+                    humidity: current.relative_humidity_2m,
+                    icon: getWeatherIcon(current.temperature_2m),
+                    localTime: getLocalTime(city.timezone)
+                };
+            } catch (error) {
+                console.error(`Ошибка загрузки погоды для ${city.name}:`, error);
+                return {
+                    ...city,
+                    temperature: '--',
+                    humidity: '--',
+                    icon: '❓',
+                    localTime: getLocalTime(city.timezone)
+                };
+            }
+        });
+
+        // Ждем завершения всех запросов
+        const citiesWithWeather = await Promise.all(weatherPromises);
+        
+        // Отображаем города
+        displayCities(citiesWithWeather);
+        
+        // Скрываем спиннер и показываем контейнер
+        citiesLoading.style.display = 'none';
+        citiesContainer.style.display = 'block';
+        
+    } catch (error) {
+        console.error('Ошибка загрузки данных о городах:', error);
+        citiesLoading.innerHTML = `
+            <div class="alert alert-warning">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                Не удалось загрузить данные о городах
+            </div>
+        `;
+    }
+}
+
 // Функция для определения описания погоды по температуре
 function getWeatherDescription(temp) {
     if (temp < -10) return 'сильный мороз';
@@ -193,3 +251,4 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('cityInput').focus();
 
 });
+
