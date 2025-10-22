@@ -165,7 +165,7 @@ function displayCities(cities) {
     const citiesContainer = document.getElementById('citiesContainer');
     
     const citiesHTML = cities.map(city => `
-        <div class="col-12 mb-3">
+        <div class="col-12">
             <div class="city-card bg-white rounded-2xl p-3 border">
                 <div class="d-flex justify-content-between align-items-start mb-2">
                     <div>
@@ -318,6 +318,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }, 60000); // Обновлять каждую минуту
 });
+
 
 
 
