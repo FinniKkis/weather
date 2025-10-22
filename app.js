@@ -165,19 +165,19 @@ function displayCities(cities) {
     const citiesContainer = document.getElementById('citiesContainer');
     
     const citiesHTML = cities.map(city => `
-        <div class="col-10 col-sm-3">
-            <div class="city-card bg-white rounded-2xl p-3 border h-100">
+        <div class="col-12 col-sm-6">
+            <div class="city-card bg-white rounded-2xl p-3 border">
                 <div class="d-flex justify-content-between align-items-start mb-2">
                     <div>
                         <h6 class="fw-bold mb-1">${city.name}</h6>
                         <small class="text-muted">${city.country}</small>
                     </div>
-                    <div class="text-end ms-2">
-                        <div class="fw-bold text-primary fs-5">${city.temperature}°C</div>
+                    <div class="text-end">
+                        <div class="fw-bold text-primary">${city.temperature}°C</div>
                         <div class="text-muted small">${city.icon}</div>
                     </div>
                 </div>
-                <div class="d-flex justify-content-between align-items-center text-sm mt-2">
+                <div class="d-flex justify-content-between text-sm">
                     <span class="text-muted">
                         <i class="bi bi-droplet me-1"></i>${city.humidity}%
                     </span>
@@ -318,6 +318,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }, 60000); // Обновлять каждую минуту
 });
+
 
 
 
