@@ -292,11 +292,33 @@ function handleKeyPress(event) {
     }
 }
 
+/ Обработчик переключения вкладок
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('cityInput').focus();
+
+    // Загружаем города при переходе на вкладку
+    const citiesTab = document.getElementById('cities-tab');
+    citiesTab.addEventListener('click', function() {
+        if (!window.citiesLoaded) {
+            loadMajorCitiesWeather();
+            window.citiesLoaded = true;
+        }
+    });
+
+    // Обновляем время каждую минуту
+    setInterval(() => {
+        if (window.citiesLoaded && document.getElementById('cities').classList.contains('active')) {
+            loadMajorCitiesWeather();
+        }
+    }, 60000); // Обновлять каждую минуту
+});
+
 // Фокусировка на поле ввода при загрузке
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('cityInput').focus();
 
 });
+
 
 
 
