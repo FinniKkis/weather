@@ -41,47 +41,51 @@
                             </li>
                         </ul>
 
-                        <!-- Форма поиска -->
-                        <div class="mb-6">
-                            <div class="input-group">
-                                <input 
-                                    type="text" 
-                                    id="cityInput" 
-                                    class="form-control form-control-lg" 
-                                    placeholder="Введите название города..."
-                                    onkeypress="handleKeyPress(event)"
-                                >
-                                <button 
-                                    id="searchBtn" 
-                                    class="btn btn-primary btn-lg px-4"
-                                    onclick="getWeather()"
-                                >
-                                    <i class="bi bi-search me-2"></i>
-                                    Найти
-                                </button>
+                        <!-- Содержимое вкладок -->
+                        <div class="tab-content" id="weatherTabsContent">
+                            <!-- Вкладка поиска -->
+                            <div class="tab-pane fade show active" id="search" role="tabpanel">
+                                <!-- Форма поиска -->
+                                <div class="mb-6">
+                                    <div class="input-group">
+                                        <input 
+                                            type="text" 
+                                            id="cityInput" 
+                                            class="form-control form-control-lg" 
+                                            placeholder="Введите название города..."
+                                            onkeypress="handleKeyPress(event)"
+                                        >
+                                        <button 
+                                            id="searchBtn" 
+                                            class="btn btn-primary btn-lg px-4"
+                                            onclick="getWeather()"
+                                        >
+                                            <i class="bi bi-search me-2"></i>
+                                            Найти
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Результаты погоды -->
+                                <div id="weatherResult" class="text-center" style="display: none;">
+                                    <!-- Погодная информация будет здесь -->
+                                </div>
+
+                                <!-- Сообщение об ошибке -->
+                                <div id="errorMessage" class="alert alert-danger text-center" style="display: none;">
+                                    <!-- Сообщения об ошибках будут здесь -->
+                                </div>
+
+                                <!-- Спиннер загрузки -->
+                                <div id="loadingSpinner" class="text-center" style="display: none;">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Загрузка...</span>
+                                    </div>
+                                    <p class="text-gray-600 mt-2">Получаем данные о погоде...</p>
+                                </div>
                             </div>
                         </div>
-
-                        <!-- Результаты погоды -->
-                        <div id="weatherResult" class="text-center" style="display: none;">
-                            <!-- Погодная информация будет здесь -->
-                        </div>
-
-                        <!-- Сообщение об ошибке -->
-                        <div id="errorMessage" class="alert alert-danger text-center" style="display: none;">
-                            <!-- Сообщения об ошибках будут здесь -->
-                        </div>
-
-                        <!-- Спиннер загрузки -->
-                        <div id="loadingSpinner" class="text-center" style="display: none;">
-                            <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Загрузка...</span>
-                            </div>
-                            <p class="text-gray-600 mt-2">Получаем данные о погоде...</p>
-                        </div>
-                    </div>
-                </div>
-
+                    
                 <!-- Информация о приложении -->
                 <div class="text-center mt-4">
                     <p class="text-white text-sm">
@@ -99,3 +103,4 @@
 </body>
 
 </html>
+
