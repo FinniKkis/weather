@@ -1,3 +1,18 @@
+const majorCities = [
+    { name: 'Токио', country: 'Япония', timezone: 'Asia/Tokyo', coords: { lat: 35.6762, lon: 139.6503 } },
+    { name: 'Дели', country: 'Индия', timezone: 'Asia/Kolkata', coords: { lat: 28.6139, lon: 77.2090 } },
+    { name: 'Шанхай', country: 'Китай', timezone: 'Asia/Shanghai', coords: { lat: 31.2304, lon: 121.4737 } },
+    { name: 'Сан-Паулу', country: 'Бразилия', timezone: 'America/Sao_Paulo', coords: { lat: -23.5505, lon: -46.6333 } },
+    { name: 'Мехико', country: 'Мексика', timezone: 'America/Mexico_City', coords: { lat: 19.4326, lon: -99.1332 } },
+    { name: 'Каир', country: 'Египет', timezone: 'Africa/Cairo', coords: { lat: 30.0444, lon: 31.2357 } },
+    { name: 'Москва', country: 'Россия', timezone: 'Europe/Moscow', coords: { lat: 55.7558, lon: 37.6173 } },
+    { name: 'Лондон', country: 'Великобритания', timezone: 'Europe/London', coords: { lat: 51.5074, lon: -0.1278 } },
+    { name: 'Нью-Йорк', country: 'США', timezone: 'America/New_York', coords: { lat: 40.7128, lon: -74.0060 } },
+    { name: 'Лос-Анджелес', country: 'США', timezone: 'America/Los_Angeles', coords: { lat: 34.0522, lon: -118.2437 } },
+    { name: 'Сидней', country: 'Австралия', timezone: 'Australia/Sydney', coords: { lat: -33.8688, lon: 151.2093 } },
+    { name: 'Дубай', country: 'ОАЭ', timezone: 'Asia/Dubai', coords: { lat: 25.2048, lon: 55.2708 } }
+];
+
 // Функция для получения погоды через Open-Meteo API
 async function getWeather() {
     const city = document.getElementById('cityInput').value.trim();
@@ -176,4 +191,5 @@ function handleKeyPress(event) {
 // Фокусировка на поле ввода при загрузке
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('cityInput').focus();
+
 });
