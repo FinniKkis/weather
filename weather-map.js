@@ -1,69 +1,128 @@
 let weatherMap;
 let mapMarkers = [];
 let currentPopup = null;
+let mapInitialized = false;
 
 // Инициализация карты
 function initWeatherMap() {
-    // Создаем карту с центром в мире
-    weatherMap = L.map('weatherMap').setView([20, 0], 2);
+    console.log('Инициализация карты...');
+    
+    try {
+        const mapElement = document.getElementById('weatherMap');
+        if (!mapElement) {
+            console.error('Элемент карты не найден');
+            return;
+        }
 
-    // Добавляем слой OpenStreetMap
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors',
-        maxZoom: 18
-    }).addTo(weatherMap);
+        // Создаем карту с центром в мире
+        weatherMap = L.map('weatherMap').setView([20, 0], 2);
 
-    // Добавляем обработчик клика по карте
-    weatherMap.on('click', function(e) {
-        getWeatherForCoordinates(e.latlng.lat, e.latlng.lng);
-    });
+        // Добавляем слой OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 18
+        }).addTo(weatherMap);
 
-    // Загружаем основные города на карту
-    addMajorCitiesToMap();
+        // Добавляем обработчик клика по карте
+        weatherMap.on('click', function(e) {
+            getWeatherForCoordinates(e.latlng.lat, e.latlng.lng);
+        });
 
-    console.log('Карта погоды инициализирована');
+        // Загружаем основные города на карту
+        addMajorCitiesToMap();
+
+        mapInitialized = true;
+        console.log('Карта погоды успешно инициализирована');
+        
+    } catch (error) {
+        console.error('Ошибка инициализации карты:', error);
+    }
 }
 
 // Добавление крупных городов на карту
-function addMajorCitiesToMap() {
+async function addMajorCitiesToMap() {
+    if (!weatherMap) {
+        console.error('Карта не инициализирована');
+        return;
+    }
+
     // Очищаем предыдущие маркеры
     clearMapMarkers();
 
-    majorCities.forEach(city => {
-        // Получаем иконку в зависимости от температуры
-        const icon = L.divIcon({
-            className: 'weather-marker',
-            html: `
-                <div class="weather-marker-content ${getTemperatureClass(city.temperature)}">
-                    <div class="temperature">${city.temperature}°</div>
-                    <div class="city-name">${city.name}</div>
-                </div>
-            `,
-            iconSize: [60, 40],
-            iconAnchor: [30, 40]
-        });
+    for (const city of majorCities) {
+        try {
+            const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${city.coords.lat}&longitude=${city.coords.lon}&current=temperature_2m,relative_humidity_2m&timezone=auto`);
+            
+            if (!response.ok) {
+                throw new Error('Ошибка получения данных');
+            }
+            
+            const data = await response.json();
+            const current = data.current;
+            
+            const cityWithWeather = {
+                ...city,
+                temperature: Math.round(current.temperature_2m),
+                humidity: current.relative_humidity_2m,
+                localTime: getLocalTime(city.timezone)
+            };
 
-        const marker = L.marker([city.coords.lat, city.coords.lon], { icon: icon })
-            .addTo(weatherMap)
-            .bindPopup(`
-                <div class="text-center">
-                    <h6 class="fw-bold">${city.name}, ${city.country}</h6>
-                    <div class="temperature-large ${getTemperatureClass(city.temperature)}">
-                        ${city.temperature}°C
-                    </div>
-                    <div class="small text-muted">
-                        <i class="bi bi-droplet"></i> Влажность: ${city.humidity}%<br>
-                        <i class="bi bi-clock"></i> Время: ${city.localTime}
-                    </div>
-                </div>
-            `);
+            addCityMarker(cityWithWeather);
 
-        mapMarkers.push(marker);
+        } catch (error) {
+            console.error(`Ошибка загрузки погоды для ${city.name}:`, error);
+            const cityWithError = {
+                ...city,
+                temperature: '--',
+                humidity: '--',
+                localTime: getLocalTime(city.timezone)
+            };
+            addCityMarker(cityWithError);
+        }
+    }
+}
+
+// Добавление маркера города на карту
+function addCityMarker(city) {
+    if (!weatherMap) return;
+
+    const icon = L.divIcon({
+        className: 'weather-marker',
+        html: `
+            <div class="weather-marker-content ${getTemperatureClass(city.temperature)}">
+                <div class="temperature">${city.temperature}°</div>
+                <div class="city-name">${city.name}</div>
+            </div>
+        `,
+        iconSize: [60, 40],
+        iconAnchor: [30, 40]
     });
+
+    const marker = L.marker([city.coords.lat, city.coords.lon], { icon: icon })
+        .addTo(weatherMap)
+        .bindPopup(`
+            <div class="text-center">
+                <h6 class="fw-bold">${city.name}, ${city.country}</h6>
+                <div class="temperature-large ${getTemperatureClass(city.temperature)}">
+                    ${city.temperature}°C
+                </div>
+                <div class="small text-muted">
+                    <i class="bi bi-droplet"></i> Влажность: ${city.humidity}%<br>
+                    <i class="bi bi-clock"></i> Время: ${city.localTime}
+                </div>
+            </div>
+        `);
+
+    mapMarkers.push(marker);
 }
 
 // Получение погоды по координатам (при клике на карту)
 async function getWeatherForCoordinates(lat, lon) {
+    if (!weatherMap) {
+        console.error('Карта не инициализирована');
+        return;
+    }
+
     try {
         // Показываем временный маркер
         const tempMarker = L.marker([lat, lon])
@@ -81,14 +140,17 @@ async function getWeatherForCoordinates(lat, lon) {
         const current = data.current;
 
         // Получаем название местности
-        const geoResponse = await fetch(`https://geocoding-api.open-meteo.com/v1/reverse?latitude=${lat}&longitude=${lon}&language=ru`);
         let locationName = 'Неизвестное место';
-        
-        if (geoResponse.ok) {
-            const geoData = await geoResponse.json();
-            if (geoData.results && geoData.results.length > 0) {
-                locationName = geoData.results[0].name;
+        try {
+            const geoResponse = await fetch(`https://geocoding-api.open-meteo.com/v1/reverse?latitude=${lat}&longitude=${lon}&language=ru`);
+            if (geoResponse.ok) {
+                const geoData = await geoResponse.json();
+                if (geoData.results && geoData.results.length > 0) {
+                    locationName = geoData.results[0].name;
+                }
             }
+        } catch (geoError) {
+            console.error('Ошибка получения названия местности:', geoError);
         }
 
         // Обновляем popup с данными
@@ -102,9 +164,6 @@ async function getWeatherForCoordinates(lat, lon) {
                     <i class="bi bi-droplet"></i> Влажность: ${current.relative_humidity_2m}%<br>
                     <i class="bi bi-cloud"></i> ${getWeatherDescriptionByCode(current.weather_code)}
                 </div>
-                <button class="btn btn-sm btn-outline-primary mt-2" onclick="addToFavorites(${lat}, ${lon}, '${locationName}')">
-                    <i class="bi bi-star"></i> В избранное
-                </button>
             </div>
         `);
 
@@ -126,6 +185,11 @@ async function getWeatherForCoordinates(lat, lon) {
 
 // Поиск на карте
 async function searchOnMap() {
+    if (!weatherMap) {
+        alert('Карта еще не загружена. Подождите немного.');
+        return;
+    }
+
     const query = document.getElementById('mapSearch').value.trim();
     
     if (!query) {
@@ -161,8 +225,16 @@ async function searchOnMap() {
     }
 }
 
+// Обработка нажатия Enter в поле поиска карты
+function handleMapSearchKeyPress(event) {
+    if (event.key === 'Enter') {
+        searchOnMap();
+    }
+}
+
 // Вспомогательные функции
 function getTemperatureClass(temp) {
+    if (temp === '--') return 'temp-unknown';
     if (temp < 0) return 'temp-cold';
     if (temp < 10) return 'temp-cool';
     if (temp < 20) return 'temp-mild';
@@ -193,34 +265,68 @@ function getWeatherDescriptionByCode(weatherCode) {
 }
 
 function clearMapMarkers() {
+    if (!weatherMap) return;
+    
     mapMarkers.forEach(marker => {
         weatherMap.removeLayer(marker);
     });
     mapMarkers = [];
 }
 
-function addToFavorites(lat, lon, name) {
-    const favorites = JSON.parse(localStorage.getItem('weatherFavorites') || '[]');
+// Инициализация всех обработчиков карты
+function initMapHandlers() {
+    console.log('Инициализация обработчиков карты...');
     
-    // Проверяем, нет ли уже этого места в избранном
-    if (!favorites.some(fav => fav.lat === lat && fav.lon === lon)) {
-        favorites.push({ lat, lon, name, date: new Date().toISOString() });
-        localStorage.setItem('weatherFavorites', JSON.stringify(favorites));
-        alert(`Место "${name}" добавлено в избранное!`);
+    // Обработчик для кнопки поиска на карте
+    const mapSearchBtn = document.getElementById('mapSearchBtn');
+    if (mapSearchBtn) {
+        mapSearchBtn.addEventListener('click', searchOnMap);
+        console.log('Обработчик кнопки поиска добавлен');
     } else {
-        alert('Это место уже в избранном!');
+        console.error('Кнопка поиска карты не найдена');
     }
+    
+    // Обработчик для поля ввода поиска
+    const mapSearchInput = document.getElementById('mapSearch');
+    if (mapSearchInput) {
+        mapSearchInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                searchOnMap();
+            }
+        });
+        console.log('Обработчик поля поиска добавлен');
+    } else {
+        console.error('Поле поиска карты не найдено');
+    }
+    
+    // Обработчик для переключения вкладки карты
+    const mapTab = document.getElementById('map-tab');
+    if (mapTab) {
+        mapTab.addEventListener('click', function() {
+            console.log('Клик по вкладке карты');
+            if (!mapInitialized) {
+                console.log('Инициализируем карту...');
+                setTimeout(() => {
+                    initWeatherMap();
+                }, 100);
+            }
+        });
+        console.log('Обработчик вкладки карты добавлен');
+    } else {
+        console.error('Вкладка карты не найдена');
+    }
+    
+    console.log('Обработчики карты инициализированы');
 }
 
-// Инициализация карты при загрузке вкладки
+// Инициализация при загрузке документа
 document.addEventListener('DOMContentLoaded', function() {
-    const mapTab = document.getElementById('map-tab');
-    mapTab.addEventListener('click', function() {
-        if (!window.mapInitialized) {
-            setTimeout(() => {
-                initWeatherMap();
-                window.mapInitialized = true;
-            }, 100);
-        }
-    });
+    console.log('DOM загружен, инициализируем обработчики карты...');
+    // Ждем немного чтобы все элементы точно были доступны
+    setTimeout(initMapHandlers, 100);
 });
+
+// Делаем функции глобальными
+window.searchOnMap = searchOnMap;
+window.handleMapSearchKeyPress = handleMapSearchKeyPress;
+window.initWeatherMap = initWeatherMap;
