@@ -29,65 +29,36 @@ function addMajorCitiesToMap() {
     // Очищаем предыдущие маркеры
     clearMapMarkers();
 
-    // Сначала получаем погоду для всех городов
-    Promise.all(majorCities.map(async (city) => {
-        try {
-            const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${city.coords.lat}&longitude=${city.coords.lon}&current=temperature_2m,relative_humidity_2m&timezone=auto`);
-            
-            if (!response.ok) {
-                throw new Error('Ошибка получения данных');
-            }
-            
-            const data = await response.json();
-            const current = data.current;
-            
-            return {
-                ...city,
-                temperature: Math.round(current.temperature_2m),
-                humidity: current.relative_humidity_2m,
-                localTime: getLocalTime(city.timezone)
-            };
-        } catch (error) {
-            console.error(`Ошибка загрузки погоды для ${city.name}:`, error);
-            return {
-                ...city,
-                temperature: '--',
-                humidity: '--',
-                localTime: getLocalTime(city.timezone)
-            };
-        }
-    })).then(citiesWithWeather => {
-        // После получения всех данных добавляем маркеры на карту
-        citiesWithWeather.forEach(city => {
-            const icon = L.divIcon({
-                className: 'weather-marker',
-                html: `
-                    <div class="weather-marker-content ${getTemperatureClass(city.temperature)}">
-                        <div class="temperature">${city.temperature}°</div>
-                        <div class="city-name">${city.name}</div>
-                    </div>
-                `,
-                iconSize: [60, 40],
-                iconAnchor: [30, 40]
-            });
-
-            const marker = L.marker([city.coords.lat, city.coords.lon], { icon: icon })
-                .addTo(weatherMap)
-                .bindPopup(`
-                    <div class="text-center">
-                        <h6 class="fw-bold">${city.name}, ${city.country}</h6>
-                        <div class="temperature-large ${getTemperatureClass(city.temperature)}">
-                            ${city.temperature}°C
-                        </div>
-                        <div class="small text-muted">
-                            <i class="bi bi-droplet"></i> Влажность: ${city.humidity}%<br>
-                            <i class="bi bi-clock"></i> Время: ${city.localTime}
-                        </div>
-                    </div>
-                `);
-
-            mapMarkers.push(marker);
+    majorCities.forEach(city => {
+        // Получаем иконку в зависимости от температуры
+        const icon = L.divIcon({
+            className: 'weather-marker',
+            html: `
+                <div class="weather-marker-content ${getTemperatureClass(city.temperature)}">
+                    <div class="temperature">${city.temperature}°</div>
+                    <div class="city-name">${city.name}</div>
+                </div>
+            `,
+            iconSize: [60, 40],
+            iconAnchor: [30, 40]
         });
+
+        const marker = L.marker([city.coords.lat, city.coords.lon], { icon: icon })
+            .addTo(weatherMap)
+            .bindPopup(`
+                <div class="text-center">
+                    <h6 class="fw-bold">${city.name}, ${city.country}</h6>
+                    <div class="temperature-large ${getTemperatureClass(city.temperature)}">
+                        ${city.temperature}°C
+                    </div>
+                    <div class="small text-muted">
+                        <i class="bi bi-droplet"></i> Влажность: ${city.humidity}%<br>
+                        <i class="bi bi-clock"></i> Время: ${city.localTime}
+                    </div>
+                </div>
+            `);
+
+        mapMarkers.push(marker);
     });
 }
 
@@ -131,6 +102,9 @@ async function getWeatherForCoordinates(lat, lon) {
                     <i class="bi bi-droplet"></i> Влажность: ${current.relative_humidity_2m}%<br>
                     <i class="bi bi-cloud"></i> ${getWeatherDescriptionByCode(current.weather_code)}
                 </div>
+                <button class="btn btn-sm btn-outline-primary mt-2" onclick="addToFavorites(${lat}, ${lon}, '${locationName}')">
+                    <i class="bi bi-star"></i> В избранное
+                </button>
             </div>
         `);
 
@@ -187,16 +161,8 @@ async function searchOnMap() {
     }
 }
 
-// Обработка нажатия Enter в поле поиска карты
-function handleMapSearchKeyPress(event) {
-    if (event.key === 'Enter') {
-        searchOnMap();
-    }
-}
-
 // Вспомогательные функции
 function getTemperatureClass(temp) {
-    if (temp === '--') return 'temp-unknown';
     if (temp < 0) return 'temp-cold';
     if (temp < 10) return 'temp-cool';
     if (temp < 20) return 'temp-mild';
@@ -233,11 +199,21 @@ function clearMapMarkers() {
     mapMarkers = [];
 }
 
+function addToFavorites(lat, lon, name) {
+    const favorites = JSON.parse(localStorage.getItem('weatherFavorites') || '[]');
+    
+    // Проверяем, нет ли уже этого места в избранном
+    if (!favorites.some(fav => fav.lat === lat && fav.lon === lon)) {
+        favorites.push({ lat, lon, name, date: new Date().toISOString() });
+        localStorage.setItem('weatherFavorites', JSON.stringify(favorites));
+        alert(`Место "${name}" добавлено в избранное!`);
+    } else {
+        alert('Это место уже в избранном!');
+    }
+}
+
 // Инициализация карты при загрузке вкладки
 document.addEventListener('DOMContentLoaded', function() {
-    // Обработчик для кнопки поиска на карте
-    document.getElementById('mapSearchBtn').addEventListener('click', searchOnMap);
-
     const mapTab = document.getElementById('map-tab');
     mapTab.addEventListener('click', function() {
         if (!window.mapInitialized) {
