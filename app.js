@@ -330,7 +330,9 @@ const mapStyles = `
         box-shadow: 0 2px 6px rgba(0,0,0,0.2);
         font-weight: bold;
         font-size: 12px;
+        min-width: 50px;
     }
+    .temp-unknown { border-color: #6b7280; background: #f3f4f6; }
     .temp-cold { border-color: #93c5fd; background: #dbeafe; }
     .temp-cool { border-color: #60a5fa; background: #dbeafe; }
     .temp-mild { border-color: #34d399; background: #dcfce7; }
@@ -344,12 +346,17 @@ const mapStyles = `
     .leaflet-popup-content {
         margin: 12px;
     }
+    .city-name {
+        font-size: 10px;
+        white-space: nowrap;
+    }
 `;
 
 // Добавляем стили в документ
 const styleSheet = document.createElement('style');
 styleSheet.textContent = mapStyles;
 document.head.appendChild(styleSheet);
+
 
 
 
