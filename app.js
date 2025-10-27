@@ -319,6 +319,39 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 60000); // Обновлять каждую минуту
 });
 
+// Добавляем CSS для маркеров карты
+const mapStyles = `
+    .weather-marker-content {
+        background: white;
+        border: 2px solid #3b82f6;
+        border-radius: 20px;
+        padding: 4px 8px;
+        text-align: center;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        font-weight: bold;
+        font-size: 12px;
+    }
+    .temp-cold { border-color: #93c5fd; background: #dbeafe; }
+    .temp-cool { border-color: #60a5fa; background: #dbeafe; }
+    .temp-mild { border-color: #34d399; background: #dcfce7; }
+    .temp-warm { border-color: #f59e0b; background: #fef3c7; }
+    .temp-hot { border-color: #ef4444; background: #fee2e2; }
+    .temperature-large {
+        font-size: 24px;
+        font-weight: bold;
+        margin: 5px 0;
+    }
+    .leaflet-popup-content {
+        margin: 12px;
+    }
+`;
+
+// Добавляем стили в документ
+const styleSheet = document.createElement('style');
+styleSheet.textContent = mapStyles;
+document.head.appendChild(styleSheet);
+
+
 
 
 
