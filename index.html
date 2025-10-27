@@ -127,8 +127,9 @@
                                                 id="mapSearch" 
                                                 class="form-control" 
                                                 placeholder="Найти город на карте..."
+                                                onkeypress="handleMapSearchKeyPress(event)"
                                             >
-                                            <button class="btn btn-outline-primary" onclick="searchOnMap()">
+                                            <button class="btn btn-outline-primary" id="mapSearchBtn">
                                                 <i class="bi bi-search"></i>
                                             </button>
                                         </div>
@@ -145,7 +146,7 @@
 
                                 <!-- Контейнер для карты -->
                                 <div id="weatherMap" style="height: 400px; border-radius: 12px;" class="border"></div>
-                                
+    
                                 <!-- Легенда карты -->
                                 <div class="mt-3">
                                     <div class="legend bg-white p-2 rounded border">
@@ -176,6 +177,7 @@
 </body>
 
 </html>
+
 
 
 
